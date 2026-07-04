@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>H&M 전빼꼼ZARA 몰래 찾기</title>
+        <style>
+            canvas {
+                background: grey;
+                display: none;
+                height: auto;
+                margin: 24px auto;
+                max-width: 100%;
+                touch-action: none;
+            }
+            body {
+                text-align: center;
+                font-family: Arial, sans-serif;
+                font-size: 20px;
+            }
+            .subtitle { font-size: 14px; color: #666; margin-top: -18px; }
+            .peekkom-title { width: 96px; margin: 8px auto 4px; display: block; }
+            .difficulty-note { font-size: 16px; color: #555; margin: 10px 0 24px; line-height: 1.6; }
+            button {
+                font-size: 26px;
+                padding: 12px 28px;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+            input, select { font-size: 20px; }
+        </style>
+    </head>
+    <body>
+            <h1>H&M 전빼꼼ZARA 몰래 찾기</h1>
+            <div class="subtitle">by 이음 프로젝트</div>
+            <img class="peekkom-title" src="assets/peekkomnuki.png" alt="빼꼼이"><br>
+            난이도를 골라주세요:
+            <select id="menu" name="menu" onchange="menu()">
+              <option value="easy">쉬움</option>
+              <option value="medium">보통</option>
+              <option value="hard">어려움</option>
+              <option value="custom">직접 정하기</option>
+            </select><br>
+            <div class="difficulty-note">
+                쉬움: 작은 판 / 보통: 중간 판 / 어려움: 조금 큰 판
+            </div>
+            <br>
+            가로 칸: <input id="cols" name="cols" type="text" size="2" disabled>
+            세로 칸: <input id="rows" name="rows" type="text" size="2" disabled>
+            숨어있는 빼꼼이: <input id="mines" name="mines" type="text" size="2" disabled>
+            <br><br>
+            <p>놀이 방법<br>
+
+                클릭 또는 터치: 칸을 열어요.<br>
+                오른쪽 클릭 또는 1초 터치: 빼꼼이가 있을 것 같은 칸을 표시하거나 지워요.<br>
+                게임판 위쪽 얼굴 버튼을 누르면 다시 시작해요.</p><br>
+
+            <br>
+            <button onclick="start(document.getElementById('menu'))">게임 시작</button>
+            <canvas id="jsminesweeper"></canvas>
+    </body>
+    <script src="jsminesweeper.js"></script>
+    <script language="JavaScript">
+      function menu() {
+          var elem = document.getElementById('menu');
+          if (elem.options[elem.selectedIndex].value == "custom") {
+              document.getElementById("cols").disabled = false;
+              document.getElementById("rows").disabled = false;
+              document.getElementById("mines").disabled = false;
+          } else {
+              document.getElementById("cols").disabled = true;
+              document.getElementById("rows").disabled = true;
+              document.getElementById("mines").disabled = true;
+          }
+      }
+      function start(elem) {
+          var cols = 0;
+          var rows = 0;
+          var mines = 0;
+          var d = elem.options[elem.selectedIndex].value;
+          switch(d) {
+              case "easy":
+                  cols = rows = 9; mines = 11;
+                  break;
+              case "medium":
+                  cols = rows = 16; mines = 40;
+                  break;
+              case "hard":
+                  cols = 16; rows = 20; mines = 70;
+                  break;
+              default:
+                  cols = document.getElementById("cols").value;
+                  rows = document.getElementById("rows").value;
+                  mines = document.getElementById("mines").value;
+          }
+          width = (30*cols) + 20;
+          height = (30*rows) + 220;
+
+          var canvas = document.getElementById("jsminesweeper");
+          canvas.width = width;
+          canvas.height = height;
+          canvas.style.display = "block";
+
+          init();
+          clearInterval(gametimer);
+          numberofmines = 0;
+          gametimer = null;
+          timer = 0;
+          end = false;
+          win = false;
+          endSoundPlayed = false;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          jsminesweeper(cols, rows, mines);
+          canvas.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    </script>
+</html>
