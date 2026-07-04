@@ -1,4 +1,4 @@
-// constants
+﻿// constants
 var c = 30;
 var xo = 0;
 var yo = 0;
@@ -14,6 +14,7 @@ var loseImage = new Image();
 var loseImageLoaded = false;
 var endSound = new Audio("assets/peekkomsounds.m4a");
 var endSoundPlayed = false;
+var soundUnlocked = false;
 var initialized = false;
 var touchTimer = null;
 var touchHandled = false;
@@ -37,6 +38,13 @@ loseImage.onerror = function () {
 };
 loseImage.src = "assets/peekkomnuki.png";
 
+function unlockEndSound() {
+    if (soundUnlocked) return;
+    soundUnlocked = true;
+    endSound.volume = 1;
+    endSound.load();
+}
+
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -55,12 +63,14 @@ function init() {
         if (evt.button == 2) evt.preventDefault();
     });
     canvas.addEventListener("mousedown", function (evt) {
+        unlockEndSound();
         var mousePos = getMousePos(canvas, evt);
         handleCanvasAction(mousePos, evt.button);
     }, false);
 
     canvas.addEventListener("touchstart", function (evt) {
         evt.preventDefault();
+        unlockEndSound();
         var touch = evt.changedTouches[0];
         touchStartPos = getMousePos(canvas, touch);
         touchHandled = false;
@@ -309,8 +319,8 @@ function playEndSound() {
     if (endSoundPlayed) return;
     endSoundPlayed = true;
     endSound.currentTime = 0;
-    endSound.play().catch(function () {
-        // Some browsers block audio until the user interacts again.
+    endSound.play().catch(function (error) {
+        console.log("빼꼼 사운드를 재생하지 못했습니다.", error);
     });
 }
 
@@ -424,3 +434,5 @@ class Mine {
         updateHeader();
     }
 }
+
+
