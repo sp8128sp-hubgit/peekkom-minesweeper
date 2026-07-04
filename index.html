@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>H&M 전빼꼼ZARA 몰래 찾기</title>
+        <style>
+            html {
+                background: #f7f3e8;
+            }
+
+            canvas {
+                background: grey;
+                display: none;
+                height: auto;
+                margin: 16px auto 0;
+                max-width: 100%;
+                touch-action: none;
+            }
+
+            body {
+                color: #2b241f;
+                font-family: Arial, sans-serif;
+                font-size: 20px;
+                margin: 0;
+                padding: 18px 12px 28px;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: clamp(32px, 7vw, 54px);
+                line-height: 1.12;
+                margin: 12px 0 6px;
+            }
+
+            .subtitle {
+                color: #6f665e;
+                font-size: 14px;
+                margin: 0 0 8px;
+            }
+
+            .peekkom-title {
+                display: block;
+                height: auto;
+                margin: 6px auto 10px;
+                max-width: 150px;
+                width: clamp(70px, 16vw, 104px);
+            }
+
+            .menu-row {
+                margin: 6px 0 0;
+            }
+
+            .difficulty-note {
+                color: #5d554e;
+                font-size: 15px;
+                line-height: 1.5;
+                margin: 8px 0 10px;
+            }
+
+            .settings {
+                align-items: center;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                justify-content: center;
+                margin: 6px auto 12px;
+                max-width: 720px;
+            }
+
+            .setting-item {
+                white-space: nowrap;
+            }
+
+            .howto {
+                font-size: 18px;
+                line-height: 1.55;
+                margin: 10px auto 14px;
+                max-width: 760px;
+            }
+
+            .start-button {
+                background: #f4cf64;
+                border: 2px solid #2b241f;
+                font-size: 26px;
+                padding: 12px 28px;
+                border-radius: 10px;
+                cursor: pointer;
+                margin-top: 8px;
+            }
+
+            input, select {
+                font-size: 20px;
+                max-width: 120px;
+            }
+
+            @media (max-width: 600px) {
+                body {
+                    font-size: 16px;
+                    padding: 8px 10px 24px;
+                }
+
+                h1 {
+                    font-size: clamp(28px, 8vw, 42px);
+                    line-height: 1.15;
+                    margin-top: 8px;
+                }
+
+                .subtitle {
+                    font-size: 13px;
+                    margin-bottom: 4px;
+                }
+
+                .peekkom-title {
+                    max-width: 88px;
+                    width: 22vw;
+                    margin-bottom: 8px;
+                }
+
+                .difficulty-note {
+                    font-size: 14px;
+                    margin-bottom: 8px;
+                }
+
+                .settings {
+                    gap: 7px 10px;
+                    margin-bottom: 10px;
+                }
+
+                .howto {
+                    font-size: 16px;
+                    line-height: 1.45;
+                    margin-bottom: 10px;
+                }
+
+                .start-button {
+                    font-size: 22px;
+                    margin-top: 4px;
+                    padding: 10px 24px;
+                }
+
+                input, select {
+                    font-size: 18px;
+                    max-width: 90px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+            <h1>H&M 전빼꼼ZARA 몰래 찾기</h1>
+            <div class="subtitle">by 이음 프로젝트</div>
+            <img class="peekkom-title" src="assets/peekkomnuki.png" alt="빼꼼이">
+            <div class="menu-row">
+                난이도를 골라주세요:
+                <select id="menu" name="menu" onchange="menu()">
+                  <option value="easy">쉬움</option>
+                  <option value="medium">보통</option>
+                  <option value="hard">어려움</option>
+                  <option value="custom">직접 정하기</option>
+                </select>
+            </div>
+            <div class="difficulty-note">
+                쉬움: 작은 판 / 보통: 중간 판 / 어려움: 조금 큰 판
+            </div>
+            <div class="settings">
+                <span class="setting-item">가로 칸: <input id="cols" name="cols" type="text" size="2" disabled></span>
+                <span class="setting-item">세로 칸: <input id="rows" name="rows" type="text" size="2" disabled></span>
+                <span class="setting-item">숨어있는 빼꼼이: <input id="mines" name="mines" type="text" size="2" disabled></span>
+            </div>
+            <p class="howto">놀이 방법<br>
+                클릭 또는 터치: 칸을 열어요.<br>
+                오른쪽 클릭 또는 1초 터치: 빼꼼이가 있을 것 같은 칸을 표시하거나 지워요.<br>
+                게임판 위쪽 얼굴 버튼을 누르면 다시 시작해요.</p>
+            <button class="start-button" onclick="start(document.getElementById('menu'))">게임 시작</button>
+            <canvas id="jsminesweeper"></canvas>
+    </body>
+    <script src="jsminesweeper.js"></script>
+    <script language="JavaScript">
+      function menu() {
+          var elem = document.getElementById('menu');
+          if (elem.options[elem.selectedIndex].value == "custom") {
+              document.getElementById("cols").disabled = false;
+              document.getElementById("rows").disabled = false;
+              document.getElementById("mines").disabled = false;
+          } else {
+              document.getElementById("cols").disabled = true;
+              document.getElementById("rows").disabled = true;
+              document.getElementById("mines").disabled = true;
+          }
+      }
+      function start(elem) {
+          var cols = 0;
+          var rows = 0;
+          var mines = 0;
+          var d = elem.options[elem.selectedIndex].value;
+          switch(d) {
+              case "easy":
+                  cols = rows = 9; mines = 11;
+                  break;
+              case "medium":
+                  cols = rows = 16; mines = 40;
+                  break;
+              case "hard":
+                  cols = 16; rows = 20; mines = 70;
+                  break;
+              default:
+                  cols = document.getElementById("cols").value;
+                  rows = document.getElementById("rows").value;
+                  mines = document.getElementById("mines").value;
+          }
+          width = (30*cols) + 20;
+          height = (30*rows) + 220;
+
+          var canvas = document.getElementById("jsminesweeper");
+          canvas.width = width;
+          canvas.height = height;
+          canvas.style.display = "block";
+
+          init();
+          clearInterval(gametimer);
+          numberofmines = 0;
+          gametimer = null;
+          timer = 0;
+          end = false;
+          win = false;
+          endSoundPlayed = false;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          jsminesweeper(cols, rows, mines);
+          canvas.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    </script>
+</html>
